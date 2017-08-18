@@ -3,6 +3,8 @@ set -e
 
 # expects BUILD_CACHE_CMD command to output files at ../cache
 
+AUTH_FLAGS=--basic --user admin:password
+
 echo "## 0) Build Info"
 GIT_REF="$1"
 BUILD_CACHE_CMD="$2"
@@ -20,12 +22,12 @@ CACHE_FILE=$GIT_REF.tar.gz
 CACHE_FILEPATH=$CACHE_PATH/$CACHE_FILE
 CACHE_URL=$BASE_URL/$CACHE_FILEPATH
 
-if curl --silent --head --fail "$CACHE_URL"; then
+if curl $AUTH_FLAGS --silent --head --fail "$CACHE_URL"; then
   echo "Build cache exists: $CACHE_FILEPATH"
 
   echo "## 2) Downloading and extracting cache"
   cd ../cache
-  curl "$CACHE_URL" --output "/tmp/$CACHE_FILE"
+  curl $AUTH_FLAGS "$CACHE_URL" --output "/tmp/$CACHE_FILE"
   tar -xzf /tmp/$CACHE_FILE
 
 else
@@ -37,11 +39,11 @@ else
   echo "## 3) Uploading cache"
   cd ../cache
   tar -czf /tmp/$CACHE_FILE ./
-  curl "$CACHE_URL" --upload-file /tmp/$CACHE_FILE
+  curl $AUTH_FLAGS "$CACHE_URL" --upload-file /tmp/$CACHE_FILE
 
   # check whether file was created successfully, e.g. the previous request failed with a 401
   echo "## 4) Check cache successfully uploaded"
-  curl --silent --head --fail "$CACHE_URL"
+  curl $AUTH_FLAGS --silent --head --fail "$CACHE_URL"
 fi
 
 # we expect to be in the ../cache dir by now

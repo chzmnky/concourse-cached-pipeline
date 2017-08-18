@@ -3,7 +3,7 @@ set -e
 
 # expects BUILD_CACHE_CMD command to output files at ../cache
 
-AUTH_FLAGS=--basic --user admin:password
+AUTH_FLAGS="--basic --user admin:password"
 
 echo "## 0) Build Info"
 GIT_REF="$1"
